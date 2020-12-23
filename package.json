@@ -1,0 +1,22 @@
+{
+  "name": "promise-polyfill",
+  "version": "1.0.0",
+  "description": "A Promise polyfill with Promises/A+",
+  "main": "index.js",
+  "scripts": {
+    "test": "promises-aplus-tests ./src/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ydiguo/Promise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ydiguo/Promise/issues"
+  },
+  "homepage": "https://github.com/ydiguo/Promise#readme",
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2"
+  }
+}
