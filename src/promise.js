@@ -31,10 +31,11 @@ function Promise(fun) {
 
   // 3. 定义resolve方法
   const resolve = (value) => {
-    resolvePromise(this, value);
+    resolutionProcedure(this, value);
   };
 
-  const resolvePromise = function (promise, x) {
+  // 主要执行Promise的决议逻辑
+  const resolutionProcedure = function (promise, x) {
     // 3.1 判断x是否是promise自身
     // Promises/A+：2.3.1 如果promise和x引用相同的对象，则抛出一个TypeError为原因拒绝promise。
     if (x === promise) {
@@ -64,8 +65,8 @@ function Promise(fun) {
         if (isFunction(then)) {
           /**
            * Promises/A+：
-           * 2.3.3.3 如果then是一个函数，则用x调用它；第一个参数等价于Promise的决议回调resolve，第二个参数等价于Promise的拒绝回调reject；
-           * 2.3.3.3.3 如果同时调用then中的两个回调函数，或者对同一回调函数进行了多次调用，则第一个调用具有优先权，而任何其他调用都将被忽略。所以需要使用 called 进行控制。
+           * 2.3.3.3 如果then是一个函数，则用x调用它；第一个参数是 resolvePromise，第二个参数是 rejectPromise；
+           * 2.3.3.3.3 如果同时调用 resolvePromise 和 rejectPromise，或者多次调用同一个参数，则第一个调用具有优先权，后续的调用将被忽略。（所以需要使用 called 进行控制）
            */
           then.call(
             x,
@@ -74,15 +75,15 @@ function Promise(fun) {
                 return;
               }
               called = true;
-              // Promises/A+：2.3.3.3.1 如果使用一个值y调用了then的第一个回调，则执行[[Resolve]](promise, y)，即我们写的 resolvePromise(promise, y);
-              resolvePromise(promise, y);
+              // Promises/A+：2.3.3.3.1 如果使用一个值y调用了resolvePromise，则执行[[Resolve]](promise, y)，即我们写的 resolutionProcedure(promise, y);
+              resolutionProcedure(promise, y);
             },
             (error) => {
               if (called) {
                 return;
               }
               called = true;
-              // Promises/A+：2.3.3.3.2 如果使用一个reason调用了then的第二个回调，则以这个reason直接拒绝promise;
+              // Promises/A+：2.3.3.3.2 如果使用一个reason调用了rejectPromise，则以这个reason直接拒绝promise;
               reject(error);
             }
           );
@@ -92,7 +93,7 @@ function Promise(fun) {
         /**
          * Promises/A+：
          * 2.3.3.3.4 如果调用then函数抛出一个异常：
-         * 2.3.3.3.4.1 如果已调用then中任何一个回调函数，则忽略它。
+         * 2.3.3.3.4.1 如果 resolvePromise 或 rejectPromise 被调用，则忽略它。
          * 2.3.3.3.4.2 否则，以error为理由拒绝promise。
          */
         if (called) {
