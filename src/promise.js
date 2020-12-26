@@ -288,8 +288,8 @@ Promise.allSettled = function (promises) {
     let result = [];
     let resolvedPro = 0;
     for (let index = 0, length = promises.length; index < length; index++) {
-      Promise.resolve(promises[index]).then(
-        (data) => {
+      Promise.resolve(promises[index])
+        .then((data) => {
           // 注意，这里要用index赋值，而不是push。因为要保持返回值和接收到的promise的位置一致性。
           result[index] = {
             status: FULFILLED_STATE,
@@ -298,8 +298,8 @@ Promise.allSettled = function (promises) {
           if (++resolvedPro === length) {
             resolve(result);
           }
-        },
-        (error) => {
+        })
+        .catch((error) => {
           result[index] = {
             status: REJECTED_STATE,
             reason: error,
@@ -307,8 +307,7 @@ Promise.allSettled = function (promises) {
           if (++resolvedPro === length) {
             resolve(result);
           }
-        }
-      );
+        });
     }
   });
 };
